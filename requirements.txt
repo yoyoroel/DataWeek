@@ -1,8 +1,7 @@
 pandas
 folium
 streamlit
-plotly.express
-plotly.graph_objects
-geographiclib.geodesic
+plotly
+geographiclib
 streamlit_folium
 numpy
