@@ -1,7 +1,7 @@
+streamlit
 pandas
 folium
-streamlit
-plotly
-geographiclib
 streamlit_folium
-numpy
+plotly
+matplotlib
+PIL
