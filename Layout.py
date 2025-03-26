@@ -57,7 +57,7 @@ st.markdown('''
             <h3>Gemaakt door Gem, Roel en Mariah</h3>
         </div>
     </div>
-'''.format(st.image(image, use_column_width=False, output_format="PNG")), unsafe_allow_html=True)
+'''.format(st.image(image, use_container_width=False, output_format="PNG")), unsafe_allow_html=True)
 
 # Hoofdtabs
 tabs = st.tabs(["Home", "Finnair", "Geluid"])
