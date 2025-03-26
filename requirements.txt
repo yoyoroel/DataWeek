@@ -4,4 +4,4 @@ folium
 streamlit
 plotly
 matplotlib
-PIL
+Pillow
