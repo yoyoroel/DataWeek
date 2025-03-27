@@ -1,8 +1,7 @@
 streamlit
 pandas
 folium
-streamlit-folium
+streamlit_folium
 plotly
-matplotlib
-Pillow
-openpyxl
+PIL
+numpy
