@@ -68,90 +68,127 @@ with tabs[0]:
     st.write('In dit dashboard hebben we een specifieke route van de luchtvaartmaatschappij Finnair geanalyseerd. Deze route is bijzonder interessant omdat Finnair hierop twee verschillende vliegtuigtypes inzet: de Airbus A321, een kleiner toestel, en de Airbus A350-900, een aanzienlijk groter vliegtuig.')
     st.write('Door deze twee toestellen met elkaar te vergelijken, kunnen we inzicht krijgen in de verschillen tussen een klein en een groot vliegtuig en de impact daarvan op het geluidsniveau per passagier. Dit helpt ons beter te begrijpen hoe factoren zoals vliegtuiggrootte en belading bijdragen aan de geluidshinder die wordt ervaren.')
     # Maak 2 kolommen: linker fake-sidebar en rechter content
-    col1, col2 = st.columns([1, 3])
 
     # Titel van de app
     st.title("Kaarten met geluidsmetingen A350 en A321")
     st.write('Hieronder zie je twee verschillende kaarten waarop het geluidsniveau op diverse meetpunten wordt weergegeven voor beide vliegtuigen. De grootte van de cirkel geeft de afstand weer tussen het vliegtuig en het meetpunt op het moment van de meting: hoe groter de cirkel, hoe verder het vliegtuig zich op dat moment van het meetpunt bevond.')
     # Maak 2 kolommen: linker fake-sidebar en rechter content
     col1, col2 = st.columns([1, 3])
-
-    # Laad dataset
-    @st.cache_data
-    def load_data():
-        # Laad en combineer de CSV-bestanden geluidsmeting_2024_1.csv t/m geluidsmeting_2024_7.csv
-        dataframes = [pd.read_csv(f'Geluidsmeting_2024_{i}.csv') for i in range(1, 8)]
-        return pd.concat(dataframes, ignore_index=True)
-
-    geluid = load_data()
-
-    a350 = geluid[geluid["icao_type"] == "A359"].copy()
-    a321 = geluid[geluid["icao_type"] == "A321"].copy()
-
-    def sel_naar_kleur(sel):
-        if sel >= 80:
-            return "#ff0000"  # rood
-        elif sel >= 75:
-            return "#ff6600"  # oranje
-        elif sel >= 70:
-            return "#ffcc00"  # geel
-        elif sel >= 65:
-            return "#99cc00"  # lichtgroen
-        else:
-            return "#33cc33"  # groen
-
-    def bereken_stats(geluid):
-        return geluid.groupby(['lat', 'lng']).agg(
-            aantal_metingen=('SEL_dB', 'count'),
-            gemiddeld_SEL_db=('SEL_dB', 'mean'),
-            gemiddelde_afstand=('distance', 'mean'),
-            gemiddelde_tijd=('duration', 'mean'),
-            gemiddelde_hoogte=('altitude', 'mean')
-            ).reset_index()
+    with col1:
+        st.markdown(
+            """
+            <div class="sticky-legend">
+            <h4>Legenda</h4>
+            <h5>Geluidsmetingen (dB):</h5>
+            <p><span style="color:#33cc33">●</span> < 65 dB (Zeer laag)</p>
+            <p><span style="color:#99cc00">●</span> 65-70 dB (Laag)</p>
+            <p><span style="color:#ffcc00">●</span> 70-75 dB (Gemiddeld)</p>
+            <p><span style="color:#ff6600">●</span> 75-80 dB (Hoog)</p>
+            <p><span style="color:#ff0000">●</span> > 80 dB (Zeer hoog)</p>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+        
+        st.markdown(
+            """
+            <style>
+            .sticky-legend {
+            position: -webkit-sticky;
+            position: sticky;
+            top: 0;
+            background-color: white;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            z-index: 1000;
+            }
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
     
-    a350_stats = bereken_stats(a350)
-    a321_stats = bereken_stats(a321)
-    
-    a350_stats = a350.groupby(['lat', 'lng']).agg(
-    aantal_metingen=('SEL_dB', 'count'),
-    gemiddeld_SEL_db=('SEL_dB', 'mean'),
-    gemiddelde_afstand=('distance', 'mean'),
-    gemiddelde_tijd=('duration', 'mean'),
-    gemiddelde_hoogte=('altitude', 'mean')
-    ).reset_index()
+    with col2:
+        
+        # Titel van de app
+        st.title("Kaarten met geluidsmetingen A350 en A321")
 
-    def maak_folium_kaart(df_stats, toestelnaam):
-        kaart = folium.Map(location=[df_stats['lat'].mean(), df_stats['lng'].mean()], zoom_start=11)
+        # Laad dataset
+        @st.cache_data
+        def load_data():
+            # Laad en combineer de CSV-bestanden geluidsmeting_2024_1.csv t/m geluidsmeting_2024_7.csv
+            dataframes = [pd.read_csv(f'Geluidsmeting_2024_{i}.csv') for i in range(1, 8)]
+            return pd.concat(dataframes, ignore_index=True)
 
-        for _, row in df_stats.iterrows():
-            kleur = sel_naar_kleur(row['gemiddeld_SEL_db'])
-            popup_text = (
-                f"<b>{toestelnaam}</b><br>"
-                f"Aantal metingen: {row['aantal_metingen']}<br>"
-                f"Gemiddelde SEL: {row['gemiddeld_SEL_db']:.1f} dB<br>"
-                f"Gemiddelde afstand: {row['gemiddelde_afstand']:.0f} m<br>"
-                f"Gemiddelde hoogte: {row['gemiddelde_hoogte']:.0f} m"
-            )
+        geluid = load_data()
 
-            folium.CircleMarker(
-                location=(row['lat'], row['lng']),
-                radius=max(3, row['gemiddelde_hoogte'] * 0.02),
-                color=kleur,
-                fill=True,
-                fill_color=kleur,
-                fill_opacity=0.7,
-                popup=folium.Popup(popup_text, max_width=200),
-                tooltip = popup_text
-            ).add_to(kaart)
+        a350 = geluid[geluid["icao_type"] == "A359"].copy()
+        a321 = geluid[geluid["icao_type"] == "A321"].copy()
 
-        return kaart
+        def sel_naar_kleur(sel):
+            if sel >= 80:
+                return "#ff0000"  # rood
+            elif sel >= 75:
+                return "#ff6600"  # oranje
+            elif sel >= 70:
+                return "#ffcc00"  # geel
+            elif sel >= 65:
+                return "#99cc00"  # lichtgroen
+            else:
+                return "#33cc33"  # groen
 
-    # Toon kaarten in Streamlit
-    st.subheader("Kaart van A350 meetpunten")
-    st_folium(maak_folium_kaart(a350_stats, "A350"), width=1300, height=500)
+        def bereken_stats(geluid):
+            return geluid.groupby(['lat', 'lng']).agg(
+                aantal_metingen=('SEL_dB', 'count'),
+                gemiddeld_SEL_db=('SEL_dB', 'mean'),
+                gemiddelde_afstand=('distance', 'mean'),
+                gemiddelde_tijd=('duration', 'mean'),
+                gemiddelde_hoogte=('altitude', 'mean')
+                ).reset_index()
+        
+        a350_stats = bereken_stats(a350)
+        a321_stats = bereken_stats(a321)
+        
+        a350_stats = a350.groupby(['lat', 'lng']).agg(
+        aantal_metingen=('SEL_dB', 'count'),
+        gemiddeld_SEL_db=('SEL_dB', 'mean'),
+        gemiddelde_afstand=('distance', 'mean'),
+        gemiddelde_tijd=('duration', 'mean'),
+        gemiddelde_hoogte=('altitude', 'mean')
+        ).reset_index()
 
-    st.subheader("Kaart van A321 meetpunten")
-    st_folium(maak_folium_kaart(a321_stats, "A321"), width=1300, height=500)
+        def maak_folium_kaart(df_stats, toestelnaam):
+            kaart = folium.Map(location=[df_stats['lat'].mean(), df_stats['lng'].mean()], zoom_start=11)
+
+            for _, row in df_stats.iterrows():
+                kleur = sel_naar_kleur(row['gemiddeld_SEL_db'])
+                popup_text = (
+                    f"<b>{toestelnaam}</b><br>"
+                    f"Aantal metingen: {row['aantal_metingen']}<br>"
+                    f"Gemiddelde SEL: {row['gemiddeld_SEL_db']:.1f} dB<br>"
+                    f"Gemiddelde afstand: {row['gemiddelde_afstand']:.0f} m<br>"
+                    f"Gemiddelde hoogte: {row['gemiddelde_hoogte']:.0f} m"
+                )
+
+                folium.CircleMarker(
+                    location=(row['lat'], row['lng']),
+                    radius=max(3, row['gemiddelde_hoogte'] * 0.02),
+                    color=kleur,
+                    fill=True,
+                    fill_color=kleur,
+                    fill_opacity=0.7,
+                    popup=folium.Popup(popup_text, max_width=200),
+                    tooltip = popup_text
+                ).add_to(kaart)
+
+            return kaart
+
+        # Toon kaarten in Streamlit
+        st.subheader("Kaart van A350 meetpunten")
+        st_folium(maak_folium_kaart(a350_stats, "A350"), width=1300, height=500)
+
+        st.subheader("Kaart van A321 meetpunten")
+        st_folium(maak_folium_kaart(a321_stats, "A321"), width=1300, height=500)
 
 # Tab 2
 with tabs[1]:
