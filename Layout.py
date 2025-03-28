@@ -89,6 +89,21 @@ with tabs[0]:
             """,
             unsafe_allow_html=True
         )
+
+        st.markdown(
+            """
+            <div class="sticky-legend" style="margin-top: 8cm;">
+            <h4>Legenda</h4>
+            <h5>Geluidsmetingen (dB):</h5>
+            <p><span style="color:#33cc33">●</span> < 65 dB (Zeer laag)</p>
+            <p><span style="color:#99cc00">●</span> 65-70 dB (Laag)</p>
+            <p><span style="color:#ffcc00">●</span> 70-75 dB (Gemiddeld)</p>
+            <p><span style="color:#ff6600">●</span> 75-80 dB (Hoog)</p>
+            <p><span style="color:#ff0000">●</span> > 80 dB (Zeer hoog)</p>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
         
         st.markdown(
             """
