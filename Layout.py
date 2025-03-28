@@ -173,7 +173,7 @@ with tabs[0]:
         ).reset_index()
 
         def maak_folium_kaart(df_stats, toestelnaam):
-            kaart = folium.Map(location=[52.227859, 4.690308], zoom_start=11)
+            kaart = folium.Map(location=[52.234596, 4.743821], zoom_start=11)
 
             for _, row in df_stats.iterrows():
                 kleur = sel_naar_kleur(row['gemiddeld_SEL_db'])
