@@ -92,7 +92,7 @@ with tabs[0]:
 
         st.markdown(
             """
-            <div class="sticky-legend" style="margin-top: 8cm;">
+            <div class="sticky-legend" style="margin-top: 7cm;">
             <h4>Legenda</h4>
             <h5>Geluidsmetingen (dB):</h5>
             <p><span style="color:#33cc33">●</span> < 65 dB (Zeer laag)</p>
