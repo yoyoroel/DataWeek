@@ -76,9 +76,6 @@ with tabs[0]:
     # Maak 2 kolommen: linker fake-sidebar en rechter content
     col1, col2 = st.columns([1, 3])
 
-    # Titel van de app
-    st.title("Kaarten met geluidsmetingen A350 en A321")
-
     # Laad dataset
     @st.cache_data
     def load_data():
