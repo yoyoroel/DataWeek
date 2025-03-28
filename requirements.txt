@@ -5,3 +5,4 @@ streamlit_folium
 plotly
 Pillow
 numpy
+openpyxl
