@@ -3,5 +3,5 @@ pandas
 folium
 streamlit_folium
 plotly
-PIL
+Pillow
 numpy
